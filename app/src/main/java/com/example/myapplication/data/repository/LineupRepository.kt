@@ -151,6 +151,44 @@ class LineupRepository {
     }
 
     /**
+     * Atualiza um agendamento existente de navio no berço.
+     */
+    fun updateSchedule(berthId: Long, schedule: ShipSchedule): Result<Unit> {
+        val currentBerths = _berthsFlow.value.toMutableList()
+        val index = currentBerths.indexOfFirst { it.id == berthId }
+        if (index == -1) {
+            return Result.failure(IllegalArgumentException("Berço não encontrado com ID: $berthId"))
+        }
+
+        val berth = currentBerths[index]
+
+        // RN001: Validação Anti-Sobreposição excluindo o próprio agendamento
+        if (berth.hasOverlap(schedule.startDay, schedule.endDay, excludeScheduleId = schedule.id)) {
+            return Result.failure(
+                IllegalStateException("RN001 - Conflito de Agenda! O ${berth.name} já possui outro navio agendado no período de dia ${schedule.startDay} a ${schedule.endDay}.")
+            )
+        }
+
+        // RN002: Bloqueio Hidrodinâmico de Maré Baixa
+        val hydrodynamicCheck = TideData.checkHydrodynamicSafety(
+            berthMaxDraft = berth.maxDraft,
+            shipDraft = schedule.draft,
+            startDay = schedule.startDay,
+            endDay = schedule.endDay
+        )
+
+        if (hydrodynamicCheck is HydrodynamicValidationResult.Invalid) {
+            return Result.failure(IllegalStateException(hydrodynamicCheck.reason))
+        }
+
+        val updatedSchedules = berth.schedules.map { if (it.id == schedule.id) schedule else it }.toMutableList()
+        currentBerths[index] = berth.copy(schedules = updatedSchedules)
+        _berthsFlow.value = currentBerths
+
+        return Result.success(Unit)
+    }
+
+    /**
      * Remove um agendamento de navio do berço.
      */
     fun removeSchedule(berthId: Long, scheduleId: Long): Boolean {

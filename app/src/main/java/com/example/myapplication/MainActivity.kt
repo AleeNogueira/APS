@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.ui.screens.LineupScreen
+import com.example.myapplication.ui.screens.PortArrivalsScreen
 import com.example.myapplication.ui.screens.PortCargosScreen
 import com.example.myapplication.ui.screens.PortTidesScreen
 import com.example.myapplication.ui.screens.PortVesselsScreen
@@ -56,20 +57,26 @@ fun MainAppHost() {
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Text("🚢", fontSize = 18.sp) },
-                    label = { Text("Cargas", fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) }
+                    icon = { Text("🗓️", fontSize = 18.sp) },
+                    label = { Text("Programação", fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 },
-                    icon = { Text("🚤", fontSize = 18.sp) },
-                    label = { Text("Frota IMO", fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal) }
+                    icon = { Text("🚢", fontSize = 18.sp) },
+                    label = { Text("Cargas", fontWeight = if (selectedTab == 2) FontWeight.Bold else FontWeight.Normal) }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 },
+                    icon = { Text("🚤", fontSize = 18.sp) },
+                    label = { Text("Frota IMO", fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Normal) }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 },
                     icon = { Text("🌊", fontSize = 18.sp) },
-                    label = { Text("Marés RF008", fontWeight = if (selectedTab == 3) FontWeight.Bold else FontWeight.Normal) }
+                    label = { Text("Marés", fontWeight = if (selectedTab == 4) FontWeight.Bold else FontWeight.Normal) }
                 )
             }
         }
@@ -81,9 +88,10 @@ fun MainAppHost() {
         ) {
             when (selectedTab) {
                 0 -> LineupScreen()
-                1 -> PortCargosScreen()
-                2 -> PortVesselsScreen()
-                3 -> PortTidesScreen()
+                1 -> PortArrivalsScreen()
+                2 -> PortCargosScreen()
+                3 -> PortVesselsScreen()
+                4 -> PortTidesScreen()
             }
         }
     }
